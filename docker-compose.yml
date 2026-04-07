@@ -1,0 +1,95 @@
+# Docker Compose - CtrlClaw Deployment
+#
+# Responsabilidades por container:
+#
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ CONTAINER       │ RESPONSABILIDADE                                  │
+# ├─────────────────────────────────────────────────────────────────────┤
+# │ nginx           │ TLS termination, rate limiting, CORS, routing      │
+# │                 │ Reverse proxy, WAF básico                          │
+# ├─────────────────────────────────────────────────────────────────────┤
+# │ frontend        │ Next.js SSR, UI rendering, client-side logic       │
+# │                 │ Headers de segurança, CSP                          │
+# ├─────────────────────────────────────────────────────────────────────┤
+# │ backend         │ Lógica de negócio, autenticação, autorização       │
+# │                 │ Rate limiting por usuário, validação de input      │
+# └─────────────────────────────────────────────────────────────────────┘
+
+version: '3.8'
+
+services:
+  # Next.js Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_ADAPTER=${BACKEND_ADAPTER:-nanoclaw}
+    container_name: ctrlclaw-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - BACKEND_ADAPTER=${BACKEND_ADAPTER:-nanoclaw}
+      - CLAW_API_URL=${CLAW_API_URL}
+      - CLAW_WS_URL=${CLAW_WS_URL}
+      # NÃO expor tokens ou credenciais aqui
+    networks:
+      - ctrlclaw-network
+    # Não expor porta diretamente - passa pelo nginx
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: ctrlclaw-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/letsencrypt:ro
+      - nginx-cache:/var/cache/nginx
+    networks:
+      - ctrlclaw-network
+    depends_on:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend (NanoClaw ou compatível)
+  backend:
+    image: ${BACKEND_IMAGE:-nanoclaw:latest}
+    container_name: ctrlclaw-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      # Configurações específicas do backend
+    networks:
+      - ctrlclaw-network
+    expose:
+      - "3001"
+    volumes:
+      - backend-data:/app/data
+    # O backend NÃO deve ser acessível diretamente
+    # Todo tráfego deve passar pelo nginx
+
+networks:
+  ctrlclaw-network:
+    driver: bridge
+    internal: false
+
+volumes:
+  nginx-cache:
+  backend-data:
