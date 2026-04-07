@@ -5,25 +5,31 @@ import { useAuth } from "@/hooks/use-auth";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useAgentsStore } from "@/features/agents/stores/agents-store";
 import { useChatService } from "../hooks/use-chat-service";
 import { useToast } from "@/hooks/use-toast";
 import { ToastContainer } from "@/components/ui/toast";
+import { ContextPanel } from "@/features/memory/components/ContextPanel";
+import { useMemory } from "@/features/memory/hooks/use-memory";
+import { getContextService, AssembledContext } from "@/features/memory/services/context-service";
 
 export function ChatContainer() {
   const conversation = useActiveConversation();
   const { user } = useAuth();
   const { isOnline } = useWebSocket();
   const { selectedAgentId } = useAgentsStore();
-  const { isLoadingHistory, sendMessage, createConversation, loadHistory, setActiveConversation } = useChatService();
+  const { isLoadingHistory, sendMessage, createConversation, loadHistory } = useChatService();
   const isHistoryLoaded = useIsHistoryLoaded(conversation?.id || '');
   const isCreatingRef = useRef(false);
   const { toasts, removeToast, error, success } = useToast();
+  const { indexConversation, updateIndex, assembleContext } = useMemory();
   
   // Estados de loading granular
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [assembledContext, setAssembledContext] = useState<AssembledContext | null>(null);
+  const [isLoadingContext, setIsLoadingContext] = useState(false);
 
   // Create conversation if none exists
   useEffect(() => {
@@ -31,9 +37,13 @@ export function ChatContainer() {
     if (!conversation && store.conversations.length === 0 && isOnline && !isCreatingRef.current) {
       isCreatingRef.current = true;
       createConversation(selectedAgentId || undefined)
-        .then(() => { 
+        .then(async (conv) => { 
           isCreatingRef.current = false;
           success("New conversation created");
+          // Auto-index new conversation
+          if (conv) {
+            await indexConversation(conv, []);
+          }
         })
         .catch((err) => { 
           console.error('[ChatContainer] Failed to create conversation:', err);
@@ -41,17 +51,62 @@ export function ChatContainer() {
           isCreatingRef.current = false; 
         });
     }
-  }, [conversation, isOnline, selectedAgentId, createConversation, error, success]);
+  }, [conversation, isOnline, selectedAgentId, createConversation, error, success, indexConversation]);
 
-  // Load history when conversation changes (com proteção contra duplicatas)
+  // Load history and assemble context when conversation changes
   useEffect(() => {
     if (conversation?.id && !isHistoryLoaded && !isLoadingHistory) {
-      loadHistory(conversation.id).catch((err) => {
-        console.error('[ChatContainer] Failed to load history:', err);
-        error("Failed to load conversation history");
-      });
+      loadHistory(conversation.id)
+        .then(async () => {
+          // After loading history, assemble context
+          await loadAndAssembleContext();
+        })
+        .catch((err) => {
+          console.error('[ChatContainer] Failed to load history:', err);
+          error("Failed to load conversation history");
+        });
     }
   }, [conversation?.id, isHistoryLoaded, isLoadingHistory, loadHistory, error]);
+
+  // Re-assemble context when messages change
+  useEffect(() => {
+    if (conversation?.id && conversation.messages.length > 0) {
+      const timeout = setTimeout(() => {
+        loadAndAssembleContext();
+      }, 500); // Debounce
+      return () => clearTimeout(timeout);
+    }
+  }, [conversation?.messages.length]);
+
+  const loadAndAssembleContext = useCallback(async () => {
+    if (!conversation) return;
+    
+    setIsLoadingContext(true);
+    try {
+      // Update index with current messages
+      await updateIndex(conversation.id, conversation.messages);
+      
+      // Assemble context
+      const context = await assembleContext(conversation.id, conversation.messages);
+      setAssembledContext(context);
+    } catch (err) {
+      console.error('[ChatContainer] Failed to assemble context:', err);
+    } finally {
+      setIsLoadingContext(false);
+    }
+  }, [conversation, updateIndex, assembleContext]);
+
+  const handleReloadContext = async () => {
+    await loadAndAssembleContext();
+    success("Context reloaded");
+  };
+
+  const handleClearContext = () => {
+    const contextService = getContextService();
+    const emptyContext = contextService.clearContext();
+    setAssembledContext(emptyContext);
+    success("Context cleared");
+  };
 
   const handleSendMessage = async (content: string) => {
     if (!conversation || !user) return;
@@ -61,7 +116,10 @@ export function ChatContainer() {
 
     try {
       await sendMessage(content, conversation.id);
-      // Feedback visual de sucesso é implícito (mensagem aparece na lista)
+      
+      // After sending, update index
+      await updateIndex(conversation.id, conversation.messages);
+      
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to send message";
       setSendError(message);
@@ -73,7 +131,6 @@ export function ChatContainer() {
 
   const handleRetry = () => {
     setSendError(null);
-    // O usuário pode tentar enviar novamente
   };
 
   if (!conversation) {
@@ -137,6 +194,16 @@ export function ChatContainer() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Context Panel */}
+        <div className="px-4 py-2 border-b bg-gray-50/50">
+          <ContextPanel 
+            context={assembledContext}
+            onReload={handleReloadContext}
+            onClear={handleClearContext}
+            isLoading={isLoadingContext}
+          />
         </div>
 
         {/* Messages */}
