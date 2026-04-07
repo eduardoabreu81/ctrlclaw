@@ -56,9 +56,7 @@ yarn-error.log*
 # ============================================
 # IDEs and Editors
 # ============================================
-/.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
+/.vscode/
 .idea/
 *.swp
 *.swo
@@ -96,7 +94,6 @@ Thumbs.db
 # TypeScript
 # ============================================
 *.tsbuildinfo
-next-env.d.ts
 
 # ============================================
 # Local Development Artifacts
