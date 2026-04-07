@@ -1,0 +1,127 @@
+# See https://help.github.com/articles/ignoring-files for more about ignoring files
+
+# ============================================
+# Dependencies
+# ============================================
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ============================================
+# Next.js Build Output
+# ============================================
+/.next/
+/out/
+/dist/
+/build
+
+# ============================================
+# Environment Files (NEVER commit secrets)
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.*.backup
+.envrc
+
+# Only allow .env.example as template
+!.env.example
+
+# ============================================
+# Logs
+# ============================================
+*.log
+*.err
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+/test-backend/*.log
+/test-backend/*.err
+
+# ============================================
+# Testing
+# ============================================
+/coverage
+.nyc_output
+
+# ============================================
+# IDEs and Editors
+# ============================================
+/.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============================================
+# Temporary Files
+# ============================================
+*.tmp
+*.temp
+*.cache
+.cache/
+tmp/
+temp/
+
+# ============================================
+# OS Generated Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================
+# Vercel / Deployment
+# ============================================
+.vercel
+.now
+
+# ============================================
+# TypeScript
+# ============================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ============================================
+# Local Development Artifacts
+# ============================================
+*.local
+
+# ============================================
+# Session/History Exports (temporary)
+# ============================================
+*.specstory
+.specstory/sessions/
+
+# ============================================
+# Local Database Files
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+/databases/
+
+# ============================================
+# Certificates and Keys
+# ============================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
