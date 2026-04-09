@@ -167,7 +167,7 @@ ctrlclaw/
 │   ├── hooks/             # React hooks
 │   └── types/             # TypeScript types
 ├── test-backend/          # Mock backend for development
-├── docs/                  # Documentation
+├── docs/                  # Documentation (see P4.2-RELATORIO-FINAL.md for validation)
 ├── scripts/               # Utility scripts
 └── public/                # Static assets
 ```
@@ -175,6 +175,21 @@ ctrlclaw/
 ---
 
 ## Current Status
+
+🚀 **STAGING APPROVED** - All protection layers validated and ready for deploy.
+
+### Validation Summary
+
+| Layer | Component | Status |
+|-------|-----------|--------|
+| HTTP | Baseline (p95 < 500ms) | ✅ Validated |
+| HTTP | Rate Limit (57% 429s) | ✅ Validated |
+| HTTP | Circuit Breaker (1013 w/ Retry-After) | ✅ Validated |
+| WebSocket | Baseline (100% success) | ✅ Validated |
+| WebSocket | Protection (10 acc, 5 blocked 1013) | ✅ Validated |
+| Resilience | Redis Fallback | ✅ Validated |
+
+See `docs/P4.2-FINAL-REPORT.md` for detailed validation evidence.
 
 ### ✅ Completed Phases
 
@@ -186,7 +201,9 @@ ctrlclaw/
 | Fase 4 | ✅ | Main Layout, UI Components |
 | Fase 5 | ✅ | Smart Setup, Discovery Engine |
 | Fase 6 | ✅ | Functional Chat, Stabilization |
-| Fase 7 | 🔄 | Memory, Context, Agents (in progress) |
+| Fase 7 | ✅ | Memory, Context, Agents |
+| P4.1 | ✅ | HTTP Load Testing - Baseline, Rate Limit, Circuit Breaker |
+| P4.2 | ✅ | WebSocket Protection - Identity-based Rate Limiting |
 
 ### Implemented Features
 
@@ -198,7 +215,15 @@ ctrlclaw/
 - ✅ IndexedDB for operational memory
 - ✅ Context assembly with limits
 - ✅ Search by keywords and tags
-- 🔄 Context injection into agent messages (in progress)
+- ✅ Context injection into agent messages
+
+### Protection & Resilience (P4.1 / P4.2)
+
+- ✅ **HTTP Rate Limiting** - 100 req/min per IP/user, 429 with Retry-After
+- ✅ **Circuit Breaker** - CLOSED→OPEN→HALF_OPEN transitions, 503 with Retry-After
+- ✅ **WebSocket Rate Limiting** - 10 connections / 50 messages per 60s per identity
+- ✅ **Redis Fallback** - Memory fallback when Redis unavailable
+- ✅ **Load Testing** - k6 scenarios for HTTP and WebSocket validation
 
 ---
 
