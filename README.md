@@ -76,6 +76,21 @@ Check that:
 - [WS Protection Policy](docs/P4.2-WS-POLICY.md)
 - [Blocking Runbook](docs/P4.2-BLOCKING-RUNBOOK.md)
 
+## Roadmap
+
+| Phase | Status | Focus |
+|-------|--------|-------|
+| Phase 7 | ✅ Complete | Memory & Context |
+| Phase 8 | ✅ Complete | Semantic Search |
+| Phase 9 | ✅ Complete | Multi-Agent System |
+| Phase 10 | ✅ Complete | Persistence & Sync |
+| Phase 11 | ✅ Complete | WebSocket Real-Time |
+| Phase 12 | ✅ Complete | UX & Connection Status |
+| Phase 13 | ✅ Complete | Offline Queue |
+| Phase 14 | ✅ Complete | Delivery Confirmation |
+| Phase 15 | ✅ Complete | Production & Observability |
+| Phase 16 | 🔄 In Progress | Real Integration & Hardening |
+
 ## Project status
 
 CtrlClaw is currently validated for staging, with HTTP and WebSocket protection in place and user-facing chat flows ready for controlled environments.
