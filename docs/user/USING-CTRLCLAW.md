@@ -4,6 +4,16 @@
 
 Open CtrlClaw in the browser and sign in using the configured authentication flow.
 
+### Security reminder
+
+**Default credentials**, when present in local setup examples, are for controlled development use only:
+
+- Change the password immediately after the first login
+- Never keep default credentials in staging, shared, or public environments
+- Use strong authentication for any exposed deployment
+
+**Note:** The system does not currently enforce password change on first login. You must change default credentials manually.
+
 ## Creating a conversation
 
 Once inside the app, start a new conversation from the chat interface. Each conversation is tied to an agent.

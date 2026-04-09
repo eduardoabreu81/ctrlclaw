@@ -2,66 +2,80 @@
 
 ## What is CtrlClaw?
 
-CtrlClaw is a web interface for the Claw ecosystem. It is built to make agent interaction feel closer to a modern chat application and less like a terminal workflow.
+CtrlClaw is a web interface for the Claw ecosystem. It makes agent interaction feel like a modern chat application.
 
-## What you need before you start
+## Prerequisites
 
-Before using CtrlClaw, make sure you have:
+Before you start, make sure you have:
+- Node.js installed (v18 or higher recommended)
+- Project dependencies installed (`npm install`)
+- Working Claw-compatible backend or agent environment
+- Required environment variables configured
+- WebSocket server ready to run
 
-- Node.js installed
-- The project dependencies installed
-- A working Claw-compatible backend or agent environment
-- The required environment variables configured
-- The WebSocket server ready to run
+## Quickest Way to Try CtrlClaw
 
-## What runs in CtrlClaw
+**Note:** CtrlClaw currently requires manual setup steps. A guided installation or one-command bootstrap flow is not yet available.
 
-CtrlClaw has two main parts:
-
-- **The web app**, which provides the user interface
-- **The WebSocket and backend connection layer**, which makes real-time communication and agent responses work
-
-The web app is what you see.
-The backend and WebSocket layer are what make the interface useful.
-
-## First-time setup
-
-### 1. Install dependencies
+### Option 1: Bootstrap Script (Unix/Linux/macOS)
 
 ```bash
+./scripts/bootstrap-local.sh
+```
+
+### Option 2: Bootstrap Script (Windows)
+
+```cmd
+scripts\bootstrap-local.cmd
+```
+
+### Option 3: Manual Setup
+
+If you prefer manual control:
+
+```bash
+# 1. Install dependencies
 npm install
-```
 
-### 2. Start the WebSocket server
-
-```bash
+# 2. Start WebSocket server
 node scripts/start-ws-server.js
-```
 
-### 3. Start the web application
-
-```bash
+# 3. Start web app (in another terminal)
 npm start
+
+# 4. Open browser at http://localhost:3000
 ```
 
-### 4. Open the app
+## Quick Validation Checklist
 
-Open the browser and access the app using the configured address.
+After starting the services, verify:
 
-## Quick validation
+- [ ] Health endpoint returns OK (`curl http://localhost:3000/api/health`)
+- [ ] WebSocket server accepts connections (check browser console)
+- [ ] Can create a conversation and send a message
+- [ ] Login works (if authentication is configured)
 
-You know CtrlClaw is working when:
+## Security Notice
 
-- The health endpoint returns OK
-- The web app loads successfully
-- The WebSocket server accepts a connection
-- You can create a conversation
-- You can send and receive a message
+**Important:** Default credentials, when present in local setup examples, are for controlled development use only.
 
-## Common beginner mistakes
+- Change the password immediately after the first login
+- Never keep default credentials in staging, shared, or public environments
+- Use strong authentication for any exposed deployment
 
-- Starting the web app without starting the WebSocket server
-- Missing environment variables
-- Using the wrong backend endpoint
-- Assuming the interface is enough without the Claw environment running
-- Ignoring server logs when the UI cannot connect
+**Security follow-up:** The system does not currently enforce password change on first login for bootstrap accounts. You must change default credentials manually.
+
+## Common Beginner Mistakes
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| App opens but shows "Connecting..." | WebSocket server not running | Start with `node scripts/start-ws-server.js` |
+| Cannot send messages | Backend not configured | Check `NANOCLAW_URL` environment variable |
+| Login fails | Wrong credentials or misconfigured auth | Verify environment variables and try again |
+
+## Next Steps
+
+Once running, check out:
+- [Using CtrlClaw](USING-CTRLCLAW.md) - How to use the interface
+- [Connecting to Claw](CONNECTING-TO-CLAW.md) - Architecture explanation
+- [Troubleshooting](TROUBLESHOOTING.md) - If something goes wrong

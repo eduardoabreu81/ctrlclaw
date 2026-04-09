@@ -15,26 +15,32 @@ CtrlClaw is for people who want a cleaner and more operational way to work with 
 - Use real-time communication through WebSocket
 - Operate with more resilience and protection than a terminal-only flow
 
-## Quick start
+## Quickest way to try CtrlClaw
 
-### Requirements
+**Note:** CtrlClaw currently requires manual setup steps. A guided installation or one-command bootstrap flow is not yet available.
 
-- Node.js installed
-- Project dependencies installed
-- A working Claw-compatible backend or agent environment
-- Environment variables configured
-- WebSocket server available for real-time features
+For now, the easiest way to try CtrlClaw is to run a controlled local setup.
 
-### Start the WebSocket server
+### Option 1: Bootstrap script (if available)
 
 ```bash
-node scripts/start-ws-server.js
+# Clone and setup in one step
+./scripts/bootstrap-local.sh
 ```
 
-### Start the web application
+### Option 2: Manual setup
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start the WebSocket server
+node scripts/start-ws-server.js
+
+# 3. Start the web application (in another terminal)
 npm start
+
+# 4. Open the browser at the configured address
 ```
 
 ### Validate the setup
@@ -45,6 +51,14 @@ Check that:
 - The web app opens in the browser
 - The WebSocket server accepts connections
 - You can create a conversation and send a message
+
+## Security notice
+
+**Default credentials**, when present in local setup examples, are for controlled development use only. 
+
+- Change the password immediately after the first login
+- Never keep default credentials in staging, shared, or public environments
+- Use strong authentication for any exposed deployment
 
 ## Documentation
 
@@ -65,6 +79,11 @@ Check that:
 ## Project status
 
 CtrlClaw is currently validated for staging, with HTTP and WebSocket protection in place and user-facing chat flows ready for controlled environments.
+
+### Known limitations
+
+- **Onboarding:** Manual setup required. Guided installation or one-command bootstrap is planned but not yet available.
+- **Authentication:** Password change on first login is not enforced automatically. Users must change default credentials manually.
 
 ---
 
