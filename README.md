@@ -15,13 +15,25 @@ CtrlClaw is for people who want a cleaner and more operational way to work with 
 - Use real-time communication through WebSocket
 - Operate with more resilience and protection than a terminal-only flow
 
+## Environment Requirements
+
+| Environment | Support Level | Use Case |
+|-------------|---------------|----------|
+| **Linux** | ✅ Reference | Staging and production deployment |
+| **WSL** | ✅ Supported | Local development and validation |
+| **Windows Native** | ⚠️ Convenience only | Local convenience, not for staging validation |
+
+**For staging and production:** Use Linux (Ubuntu recommended).
+
+**For local development:** Use WSL2 on Windows or native Linux/macOS.
+
 ## Quickest way to try CtrlClaw
+
+**Prerequisites:** Node.js 18+, WSL2 (Windows) or Linux/macOS
 
 **Note:** CtrlClaw currently requires manual setup steps. A guided installation or one-command bootstrap flow is not yet available.
 
-For now, the easiest way to try CtrlClaw is to run a controlled local setup.
-
-### Option 1: Bootstrap script (if available)
+### Option 1: Bootstrap script
 
 ```bash
 # Clone and setup in one step
