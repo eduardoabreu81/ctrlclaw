@@ -187,7 +187,7 @@ ctrlclaw/
 | HTTP | Circuit Breaker (1013 w/ Retry-After) | ✅ Validated |
 | WebSocket | Baseline (100% success) | ✅ Validated |
 | WebSocket | Protection (10 acc, 5 blocked 1013) | ✅ Validated |
-| Resilience | Redis Fallback | ✅ Validated |
+| Resilience | Redis Fallback | ✅ Implemented |
 
 See `docs/P4.2-FINAL-REPORT.md` for detailed validation evidence.
 
